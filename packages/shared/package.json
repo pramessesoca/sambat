@@ -1,0 +1,17 @@
+{
+  "name": "@sambat/shared",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "build": "node init && tsc -p tsconfig.build.json",
+    "lint": "tsc --noEmit -p tsconfig.json",
+    "test": "node --test",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  }
+}

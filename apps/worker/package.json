@@ -1,0 +1,24 @@
+{
+  "name": "@sambat/worker",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "node init && tsc -p tsconfig.build.json",
+    "dev": "node init && tsx watch src/main.ts",
+    "lint": "tsc --noEmit -p tsconfig.json",
+    "test": "node --test",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@google/genai": "^1.19.0",
+    "@sambat/database": "workspace:*",
+    "@sambat/types": "workspace:*",
+    "bullmq": "^5.58.0",
+    "ioredis": "^5.7.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.0"
+  }
+}

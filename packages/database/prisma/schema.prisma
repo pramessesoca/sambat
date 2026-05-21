@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  SUPERADMIN
+  AGENCY_ADMIN
+}
+
+enum ComplaintSource {
+  WEB
+  TELEGRAM
+  WHATSAPP
+}
+
+enum ComplaintPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ComplaintStatus {
+  DITERIMA
+  DIPROSES
+  DITINDAKLANJUTI
+  SELESAI
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model User {
+  id           String           @id @default(cuid())
+  name         String
+  email        String           @unique
+  passwordHash String
+  role         UserRole
+  agencyId     String?
+  agency       Agency?          @relation(fields: [agencyId], references: [id])
+  logs         ComplaintLog[]
+  followUps    FollowUpReport[]
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
+model Agency {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  description String?
+  users       User[]
+  complaints  Complaint[]
+  followUps   FollowUpReport[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Complaint {
+  id            String             @id @default(cuid())
+  source        ComplaintSource
+  sender        String
+  message       String
+  category      String?
+  priority      ComplaintPriority @default(MEDIUM)
+  status        ComplaintStatus   @default(DITERIMA)
+  agencyId      String?
+  agency        Agency?           @relation(fields: [agencyId], references: [id])
+  aiSummary     String?
+  aiReply       String?
+  aiProcessedAt DateTime?
+  images        ComplaintImage[]
+  logs          ComplaintLog[]
+  followUps     FollowUpReport[]
+  notifications Notification[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
+
+model ComplaintImage {
+  id          String    @id @default(cuid())
+  complaintId String
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  objectPath  String
+  mimeType    String
+  sizeBytes   Int
+  createdAt   DateTime  @default(now())
+}
+
+model ComplaintLog {
+  id          String    @id @default(cuid())
+  complaintId String
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  action      String
+  createdById String?
+  createdBy   User?     @relation(fields: [createdById], references: [id])
+  createdAt   DateTime  @default(now())
+}
+
+model FollowUpReport {
+  id           String          @id @default(cuid())
+  complaintId  String
+  complaint    Complaint       @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  agencyId     String
+  agency       Agency          @relation(fields: [agencyId], references: [id])
+  createdById  String
+  createdBy    User            @relation(fields: [createdById], references: [id])
+  title        String
+  description  String
+  internalNote String?
+  isPublic     Boolean         @default(false)
+  images       FollowUpImage[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+model FollowUpImage {
+  id             String         @id @default(cuid())
+  followUpId     String
+  followUpReport FollowUpReport @relation(fields: [followUpId], references: [id], onDelete: Cascade)
+  objectPath     String
+  mimeType       String
+  sizeBytes      Int
+  createdAt      DateTime       @default(now())
+}
+
+model Notification {
+  id          String             @id @default(cuid())
+  complaintId String
+  complaint   Complaint          @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  channel     ComplaintSource
+  recipient   String
+  message     String
+  status      NotificationStatus @default(PENDING)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}

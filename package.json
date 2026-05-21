@@ -1,0 +1,20 @@
+{
+  "name": "sambat",
+  "private": true,
+  "packageManager": "pnpm@10.14.0",
+  "scripts": {
+    "build": "node init && turbo run build",
+    "db:generate": "pnpm --filter @sambat/database db:generate",
+    "db:push": "pnpm --filter @sambat/database db:push",
+    "db:seed": "pnpm --filter @sambat/database db:seed",
+    "dev": "node init && turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "turbo": "^2.5.0",
+    "typescript": "^5.8.0"
+  }
+}
